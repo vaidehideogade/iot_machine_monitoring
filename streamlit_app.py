@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import pandas as pd
 
-st.set_page_config(page_title="IoT Machine Monitor", page_icon=":material/monitoring:", layout="wide")
+st.set_page_config(page_title="IoT Machine Monitoring", page_icon=":material/monitoring:", layout="wide")
 title_col, bot_col = st.columns([5, 1])
 with title_col:
     st.title(":material/precision_manufacturing: IoT Machine Monitoring")
