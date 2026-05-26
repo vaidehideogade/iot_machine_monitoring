@@ -1,0 +1,67 @@
+name: CI/CD - IoT Monitor
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: "CI - Lint Code"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install linter (ruff)
+        run: pip install ruff
+
+      - name: Run linter
+        run: ruff check . --output-format=github
+
+  deploy:
+    name: "CD - Deploy to Snowflake"
+    runs-on: ubuntu-latest
+    needs: [lint]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Snowflake CLI
+        run: pip install snowflake-cli
+
+      - name: Create config
+        run: |
+          mkdir -p ~/.snowflake
+          echo '[connections.default]' > ~/.snowflake/config.toml
+          echo 'account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"' >> ~/.snowflake/config.toml
+          echo 'user = "${{ secrets.SNOWFLAKE_USER }}"' >> ~/.snowflake/config.toml
+          echo 'authenticator = "SNOWFLAKE_JWT"' >> ~/.snowflake/config.toml
+          echo 'database = "MACHINE_DATA"' >> ~/.snowflake/config.toml
+          echo 'schema = "DATA_PIPELINE"' >> ~/.snowflake/config.toml
+          echo 'role = "ACCOUNTADMIN"' >> ~/.snowflake/config.toml
+          echo 'warehouse = "COMPUTE_WH"' >> ~/.snowflake/config.toml
+          echo 'private_key_raw = """' >> ~/.snowflake/config.toml
+          echo '${{ secrets.SNOWFLAKE_PRIVATE_KEY }}' >> ~/.snowflake/config.toml
+          echo '"""' >> ~/.snowflake/config.toml
+          chmod 600 ~/.snowflake/config.toml
+
+      - name: Deploy Streamlit app
+        run: snow streamlit deploy --replace iot_app
