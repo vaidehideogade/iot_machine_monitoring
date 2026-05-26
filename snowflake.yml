@@ -1,0 +1,34 @@
+# created-by: streamlit-in-workspaces; skill-version=1.0.0
+# definition_version: 2
+# entities:
+#   iot_app:
+#     type: streamlit
+#     query_warehouse: COMPUTE_WH
+#     compute_pool: SYSTEM_COMPUTE_POOL_CPU
+#     main_file: streamlit_app.py
+#     artifacts:
+#       - pyproject.toml
+#       - streamlit_app.py
+#       - .streamlit/config.toml
+#     identifier:
+#       database: MACHINE_DATA
+#       schema: DATA_PIPELINE
+#       name: IOT_MONITOR_COPY
+#     title: iot_monitor_copy
+#     run_mode: SpcsOnly
+#     execute_as: OWNER
+definition_version: 2
+entities:
+  iot_app:
+    type: streamlit
+    query_warehouse: COMPUTE_WH
+    main_file: streamlit_app.py
+    artifacts:
+      - pyproject.toml
+      - streamlit_app.py
+      - .streamlit/config.toml
+    identifier:
+      database: MACHINE_DATA
+      schema: DATA_PIPELINE
+      name: IOT_MONITOR_COPY
+    title: iot_monitor_copy
